@@ -128,9 +128,7 @@ export class AuthRepository extends Context.Service<
             .select()
             .from(users)
             .where(eq(users.email, email))
-            .pipe(
-              Effect.mapError(toAuthPersistenceError),
-            );
+            .pipe(Effect.mapError(toAuthPersistenceError));
           const found = rows[0];
           if (!found) {
             return yield* new UserNotFound({
@@ -148,9 +146,7 @@ export class AuthRepository extends Context.Service<
           .select()
           .from(users)
           .where(eq(users.id, id))
-          .pipe(
-            Effect.mapError(toAuthPersistenceError),
-          );
+          .pipe(Effect.mapError(toAuthPersistenceError));
         const found = rows[0];
         if (!found) {
           return yield* new UserNotFound({
@@ -166,9 +162,7 @@ export class AuthRepository extends Context.Service<
             .insert(refreshTokens)
             .values({ id: crypto.randomUUID(), userId, token, expiresAt })
             .returning()
-            .pipe(
-              Effect.mapError(toAuthPersistenceError),
-            );
+            .pipe(Effect.mapError(toAuthPersistenceError));
           const inserted = rows[0];
           if (!inserted) {
             return yield* new AuthPersistenceError({
@@ -185,9 +179,7 @@ export class AuthRepository extends Context.Service<
             .select()
             .from(refreshTokens)
             .where(eq(refreshTokens.token, token))
-            .pipe(
-              Effect.mapError(toAuthPersistenceError),
-            );
+            .pipe(Effect.mapError(toAuthPersistenceError));
           const found = rows[0];
           if (!found) {
             return yield* new RefreshTokenNotFound({
@@ -203,9 +195,7 @@ export class AuthRepository extends Context.Service<
           const result = yield* db
             .delete(refreshTokens)
             .where(eq(refreshTokens.token, token))
-            .pipe(
-              Effect.mapError(toAuthPersistenceError),
-            );
+            .pipe(Effect.mapError(toAuthPersistenceError));
 
           if (result.length === 0) {
             return yield* new RefreshTokenNotFound({

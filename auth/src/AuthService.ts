@@ -3,7 +3,12 @@ import * as jwt from "jsonwebtoken";
 import { AuthRepository } from "./AuthRepository";
 import { AuthPersistenceError, UserNotFound } from "./AuthError";
 import { loadConfig } from "./Config";
-import type { LoginInput, LogoutInput, RegisterInput, User } from "./AuthSchema";
+import type {
+  LoginInput,
+  LogoutInput,
+  RegisterInput,
+  User,
+} from "./AuthSchema";
 
 export class AuthService {
   static readonly register = Effect.fn("AuthService.register")(function* (
@@ -20,9 +25,13 @@ export class AuthService {
       ...data,
       password: hashedPassword,
     });
-    const accessToken = jwt.sign({ userId: user.id }, config.ACCESS_TOKEN_SECRET, {
-      expiresIn: config.REFRESH_TOKEN_EXPIRY as any,
-    });
+    const accessToken = jwt.sign(
+      { userId: user.id },
+      config.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: config.REFRESH_TOKEN_EXPIRY as any,
+      },
+    );
     const refreshToken = jwt.sign(
       { userId: user.id },
       config.REFRESH_TOKEN_SECRET,
@@ -49,9 +58,13 @@ export class AuthService {
         message: "invalid email or password",
       });
     }
-    const accessToken = jwt.sign({ userId: user.id }, config.ACCESS_TOKEN_SECRET, {
-      expiresIn: config.ACCESS_TOKEN_EXPIRY as any,
-    });
+    const accessToken = jwt.sign(
+      { userId: user.id },
+      config.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: config.ACCESS_TOKEN_EXPIRY as any,
+      },
+    );
     const refreshToken = jwt.sign(
       { userId: user.id },
       config.REFRESH_TOKEN_SECRET,
@@ -104,9 +117,12 @@ export class AuthService {
 
   static readonly getUserById: (
     id: string,
-  ) => Effect.Effect<User, UserNotFound | AuthPersistenceError, AuthRepository> =
-    Effect.fn("AuthService.getUserById")(function* (id: string) {
-      const repository = yield* AuthRepository;
-      return yield* repository.findUserById(id);
-    });
+  ) => Effect.Effect<
+    User,
+    UserNotFound | AuthPersistenceError,
+    AuthRepository
+  > = Effect.fn("AuthService.getUserById")(function* (id: string) {
+    const repository = yield* AuthRepository;
+    return yield* repository.findUserById(id);
+  });
 }

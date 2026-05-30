@@ -27,4 +27,3 @@ if (import.meta.main) {
     Layer.launch(HttpLive) as Effect.Effect<never, never, never>,
   );
 }
-

@@ -6,7 +6,6 @@ import {
   HttpApiSecurity,
 } from "effect/unstable/httpapi";
 import { InvalidAccessToken } from "./AuthError";
-import { CurrentUser } from "./AuthSchema";
 import { loadConfig } from "./Config";
 
 export class CurrentUserService extends Context.Service<CurrentUserService>()(

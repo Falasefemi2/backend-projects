@@ -13,9 +13,11 @@ export class LoginRequest extends Schema.Class<LoginRequest>("LoginRequest")({
   password: Schema.String.check(Schema.isMinLength(1)),
 }) {}
 
-export class LogoutRequest extends Schema.Class<LogoutRequest>("LogoutRequest")({
-  refreshToken: Schema.String.check(Schema.isMinLength(1)),
-}) {}
+export class LogoutRequest extends Schema.Class<LogoutRequest>("LogoutRequest")(
+  {
+    refreshToken: Schema.String.check(Schema.isMinLength(1)),
+  },
+) {}
 
 export class RefreshTokenRequest extends Schema.Class<RefreshTokenRequest>(
   "RefreshTokenRequest",
