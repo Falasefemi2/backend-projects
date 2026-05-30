@@ -1,25 +1,16 @@
+import { Context, Effect, Layer, Redacted } from "effect";
+import * as jwt from "jsonwebtoken";
 import {
+  HttpApiError,
   HttpApiMiddleware,
   HttpApiSecurity,
-  HttpApiError,
 } from "effect/unstable/httpapi";
-import { Schema, Effect, Redacted, Context, Data, Layer } from "effect";
-import * as jwt from "jsonwebtoken";
-import { loadEnv } from "../config/env.js";
+import { InvalidAccessToken } from "./AuthError";
+import { CurrentUser } from "./AuthSchema";
+import { loadConfig } from "./Config";
 
-// Typed error for bad token
-export class InvalidTokenError extends Data.TaggedError("InvalidTokenError")<{
-  message: string;
-}> {}
-
-// The data shape
-export class CurrentUser extends Schema.Class<CurrentUser>("CurrentUser")({
-  userId: Schema.String,
-}) {}
-
-// Separate Context key for providing CurrentUser to handlers
 export class CurrentUserService extends Context.Service<CurrentUserService>()(
-  "auth/middleware/authmiddleware/CurrentUserService",
+  "auth/CurrentUser",
   { make: Effect.succeed({ userId: "" }) },
 ) {}
 
@@ -34,19 +25,19 @@ export class Authorization extends HttpApiMiddleware.Service<Authorization>()(
 export const AuthorizationLive = Layer.effect(
   Authorization,
   Effect.gen(function* () {
-    const env = yield* loadEnv;
+    const config = yield* loadConfig;
     return {
       bearer: (httpEffect, { credential }) =>
         Effect.try({
           try: () =>
             jwt.verify(
               Redacted.value(credential).trim(),
-              env.ACCESS_TOKEN_SECRET,
+              config.ACCESS_TOKEN_SECRET,
             ) as {
               userId: string;
             },
-          catch: (e) => {
-            return new InvalidTokenError({ message: String(e) });
+          catch: (error) => {
+            return new InvalidAccessToken({ message: String(error) });
           },
         }).pipe(
           Effect.flatMap((payload) =>
@@ -56,7 +47,7 @@ export const AuthorizationLive = Layer.effect(
               CurrentUserService.of({ userId: payload.userId }),
             ),
           ),
-          Effect.catchTag("InvalidTokenError", () =>
+          Effect.catchTag("InvalidAccessToken", () =>
             Effect.fail(new HttpApiError.Unauthorized()),
           ),
         ),
