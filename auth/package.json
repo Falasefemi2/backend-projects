@@ -1,0 +1,31 @@
+{
+  "name": "auth",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "prepare": "effect-language-service patch",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "devDependencies": {
+    "@effect/language-service": "^0.86.2",
+    "@types/bun": "latest",
+    "@types/jsonwebtoken": "^9.0.10"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@effect/sql-pg": "4.0.0-beta.42",
+    "drizzle-kit": "1.0.0-beta.20",
+    "drizzle-orm": "1.0.0-beta.20",
+    "effect": "^4.0.0-beta.74",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "patchedDependencies": {
+    "drizzle-orm@1.0.0-beta.20": "patches/drizzle-orm@1.0.0-beta.20.patch"
+  }
+}
