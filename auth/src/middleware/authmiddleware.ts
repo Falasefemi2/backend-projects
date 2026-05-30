@@ -39,10 +39,15 @@ export const AuthorizationLive = Layer.effect(
       bearer: (httpEffect, { credential }) =>
         Effect.try({
           try: () =>
-            jwt.verify(Redacted.value(credential), env.ACCESS_TOKEN_SECRET) as {
+            jwt.verify(
+              Redacted.value(credential).trim(),
+              env.ACCESS_TOKEN_SECRET,
+            ) as {
               userId: string;
             },
-          catch: (e) => new InvalidTokenError({ message: String(e) }),
+          catch: (e) => {
+            return new InvalidTokenError({ message: String(e) });
+          },
         }).pipe(
           Effect.flatMap((payload) =>
             Effect.provideService(
